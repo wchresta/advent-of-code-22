@@ -19,15 +19,12 @@
       #});
       #defaultPackage = forAllSystems (system: self.packages.${system}.haskell-hello);
       #checks = self.packages;
-      devShell = forAllSystems (system: let haskellPackages = nixpkgsFor.${system}.haskellPackages;
-        in haskellPackages.shellFor {
-          #packages = p: [self.packages.${system}.haskell-hello];
-          packages = p: [];
-          withHoogle = true;
-          buildInputs = with haskellPackages; [
-            haskell-language-server
-            ghcid
-            cabal-install
+      devShell = forAllSystems (system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in pkgs.mkShell {
+          buildInputs = [
+            (pkgs.haskellPackages.ghcWithPackages (p: [ p.split ]))
           ];
         });
   };
